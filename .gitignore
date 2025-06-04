@@ -1,0 +1,46 @@
+# Case result directories
+processor*
+postProcessing/
+constant/polyMesh/
+constant/extendedFeatureEdgeMesh/
+constant/lagrangian/
+constant/boundaryData/
+constant/mesh/
+constant/sets/
+constant/faceZones/
+constant/cellZones/
+constant/pointZones/
+constant/regionProperties
+
+# Time directories (numeric names)
+[0-9]/
+
+# Logs and output
+log.*
+*.log
+*.out
+*.err
+slurm-*
+
+# Backup and temporary files
+*~
+*.bak
+*.swp
+*.swo
+.DS_Store
+
+# Paraview and visualization files
+*.foam
+*.OpenFOAM
+*.vtk
+*.vtu
+*.pvtu
+*.pvd
+
+# User-specific files
+*.pyc
+__pycache__/
+
+# Other outputs
+logs/
+figs/

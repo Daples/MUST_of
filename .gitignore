@@ -11,6 +11,7 @@ constant/faceZones/
 constant/cellZones/
 constant/pointZones/
 constant/regionProperties
+*.eMesh
 
 # Time directories (numeric names)
 [0-9]/

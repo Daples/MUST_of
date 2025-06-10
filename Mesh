@@ -1,0 +1,22 @@
+#!/bin/bash
+# Run only meshing
+
+nProcs=8		# Number of processors used for simpleFoam
+
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+
+pwd
+
+./Allclean
+
+cp -r 0.orig/ 0
+
+runApplication surfaceFeatureExtract
+
+runApplication blockMesh
+
+runApplication decomposePar
+
+mpirun -np $nProcs snappyHexMesh -parallel
+
+touch must.foam

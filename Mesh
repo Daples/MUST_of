@@ -1,13 +1,7 @@
 #!/bin/bash
 # Run only meshing
 
-nProcs=8		# Number of processors used for simpleFoam
-
-. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
-
-pwd
-
-./Allclean
+nProcs=$1		# Number of processors used for simpleFoam
 
 cp -r 0.orig/ 0
 
@@ -17,6 +11,6 @@ runApplication blockMesh
 
 runApplication decomposePar
 
-mpirun -np $nProcs snappyHexMesh -parallel
+mpirun -np $nProcs snappyHexMesh -parallel > log.snappyHexMesh
 
 touch must.foam

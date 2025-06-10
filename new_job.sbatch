@@ -19,23 +19,8 @@ module load openfoam/2306
 pwd
 
 ./Allclean
-
-cp -r 0.orig/ 0
-
-runApplication surfaceFeatureExtract
-
-runApplication blockMesh
-
-runApplication decomposePar
-
-mpirun -np $nProcs snappyHexMesh -parallel -overwrite
-
-restore0Dir -processor
-
-# Test polling interface
-runParallel $(getApplication) -opt-switch nPollProcInterfaces=-1
-
-runApplication reconstructPar
+./Mesh $nProcs
+./Allrun $nProcs
 
 #------------------------------------------------------------------------------
 

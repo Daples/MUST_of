@@ -16,27 +16,16 @@ FoamFile
 
 domain
 {
-    xMin   -300;
-    xMax   300;
-    yMin   -300; 
+    xMin   -200;
+    xMax   400;
+    yMin   -400; 
     yMax   300;
     zMin     0;
-    zMax   30;
+    zMax   60;
     xCells  600;
-    yCells  600;
-    zCells  90;
+    yCells  700;
+    zCells  60;
 }
-// {
-//     xMin   -210;
-//     xMax   210;
-//     yMin   -210; 
-//     yMax   210;
-//     zMin     0;
-//     zMax   50;
-//     xCells  400;
-//     yCells  400;
-//     zCells  100;
-// }
 
 scale   1;
 

@@ -25,8 +25,8 @@ geometry
     refinementBox
     {
         type searchableBox;
-        min (-130 -200 0);
-        max (200 200 15);
+        min (-130 -400 0);
+        max (400 300 25);
     }
 
     buildings

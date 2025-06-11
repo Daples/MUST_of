@@ -18,7 +18,7 @@ module load openfoam/2306
 
 pwd
 
-./Allclean
+./Clean
 ./Mesh $nProcs
 ./Allrun $nProcs
 

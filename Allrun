@@ -3,8 +3,6 @@
 
 nProcs=$1		# Number of processors used for simpleFoam
 
-restore0Dir -processor
-
 # Run solver
 runParallel $(getApplication) -opt-switch nPollProcInterfaces=-1
 

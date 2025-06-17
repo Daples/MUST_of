@@ -22,12 +22,12 @@ addLayers       false;		// Add boundary layer mesh close to the wall
 // Geometry details and refinement
 geometry
 {
-    refinementBox
-    {
-        type searchableBox;
-        min (-130 -400 0);
-        max (400 300 25);
-    }
+    // refinementBox
+    // {
+    //     type searchableBox;
+    //     min (-130 -400 0);
+    //     max (400 300 25);
+    // }
 
     buildings
     {
@@ -75,11 +75,11 @@ castellatedMeshControls
 
     refinementRegions
     {
-        refinementBox
-        {
-            mode inside;
-            levels ((1E15 2));
-        }
+        // refinementBox
+        // {
+        //     mode inside;
+        //     levels ((1E15 2));
+        // }
 
         // Extra refinment for buildings
         buildings

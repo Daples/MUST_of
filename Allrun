@@ -3,8 +3,6 @@
 
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 
-nProcs=$1		# Number of processors used for simpleFoam
-
 # Run solver
 restore0Dir -processor
 

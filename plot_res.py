@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
 
 logs_folder = "./logs/"
 var = input("Enter variable name:")

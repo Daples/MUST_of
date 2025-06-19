@@ -13,6 +13,6 @@ runApplication blockMesh
 
 runApplication decomposePar
 
-mpirun -np $nProcs snappyHexMesh -parallel > log.snappyHexMesh
+mpirun -np $nProcs snappyHexMesh -parallel -overwrite > log.snappyHexMesh
 
 touch must.foam

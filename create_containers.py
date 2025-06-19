@@ -109,6 +109,7 @@ mesh = rotate_geometry(
 
 bbox_vertices = mesh.bounding_box.vertices  # type: ignore
 
+# Calculate the bounding box dimensions according to the guidelines
 l = 5 * H_max
 L = 15 * H_max
 xmin = np.min(bbox_vertices[:, 0]) - l

@@ -29,13 +29,13 @@ domain
 // All domain
 // {
 //     xMin   -200;
-//     xMax   400;
-//     yMin   -400; 
-//     yMax   300;
+//     xMax   315;
+//     yMin   -200; 
+//     yMax   200;
 //     zMin     0;
 //     zMax   60;
-//     xCells  600;
-//     yCells  700;
+//     xCells  515;
+//     yCells  400;
 //     zCells  60;
 // }
 

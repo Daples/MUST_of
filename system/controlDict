@@ -16,19 +16,19 @@ FoamFile
 
 application simpleFoam;
 
-startFrom latestTime;
+startFrom startTime;
 
 startTime 0;
 
 stopAt endTime;
 
-endTime 1202;
+endTime 2000;
 
 deltaT 1;
 
 writeControl timeStep;
 
-writeInterval 600;
+writeInterval 1000;
 
 purgeWrite 0;
 
@@ -45,13 +45,14 @@ timePrecision 6;
 runTimeModifiable true;
 
 functions
-{
-// #include "ensightWrite"
-// #include "vtkWrite"
-
-// // Demonstrate runTimePostProcessing
-// #include "visualization"
-// #include "profiling"
+{    
+    solverInfo
+    {
+        type            solverInfo;
+        libs            ("libutilityFunctionObjects.so");
+        fields          (U p k epsilon);
+        // writeResidualFields yes;
+    }
 }
 
 // ************************************************************************* //

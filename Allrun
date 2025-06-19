@@ -1,9 +1,13 @@
 #!/bin/bash
 # Run without sbatch
 
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+
 nProcs=$1		# Number of processors used for simpleFoam
 
 # Run solver
+restore0Dir -processor
+
 runParallel $(getApplication) -opt-switch nPollProcInterfaces=-1
 
 runApplication reconstructPar

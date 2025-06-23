@@ -18,8 +18,8 @@ matrix = np.array([l + n for n in NUMBERS for l in LETTERS]).reshape(
 )
 
 # Create a mask to select specific containers
-mask = np.loadtxt("sources/selection.txt", delimiter="  ", dtype=str)
-mask = mask[1:, 1:].astype(int)
+mask = np.loadtxt("sources/selection.txt", delimiter=" ", dtype=str)
+mask = mask[1:, :-1].astype(int)
 masked_tags = matrix[np.where(mask == 1)].flatten().tolist()
 
 # The containers are not rotated

@@ -8,15 +8,29 @@
 #SBATCH --cpus-per-task=1               # Number of cpu per task
 #SBATCH --mem-per-cpu=4000M                      # Ask for memory
 
-### Run all the cases ###
-nProcs=64		# Number of processors used for simpleFoam
+# Set the environment
+nProcs=64
+simEndTime=2000
+writeInterval=1000
+
 
 module load 2024r1 openmpi
 module load openfoam/2306
 
-. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
-
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Run function
 pwd
+
+# Change number of processors in decomposeParDict
+sed -i "s/numberOfSubdomains.*/numberOfSubdomains $nProcs;/g" system/decomposeParDict
+cat system/decomposeParDict | grep "numberOfSubdomains"
+
+# Change simulation end time
+sed -i "s/endTime.*/endTime $simEndTime;/g" system/controlDict
+cat system/decomposeParDict | grep "numberOfSubdomains"
+
+# Change write interval
+sed -i "s/writeInterval.*/writeInterval $writeInterval;/g" system/controlDict
+cat system/controlDict | grep "writeInterval"
 
 ./Clean
 ./Mesh $nProcs

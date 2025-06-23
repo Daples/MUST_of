@@ -4,6 +4,7 @@ from stl import mesh
 import numpy as np
 import string
 
+# Constants
 CONTAINER_HEIGHT = 2.54
 VIP_CAR_HEIGHT = 3.51
 LETTERS = string.ascii_uppercase[:12][::-1]
@@ -17,25 +18,12 @@ matrix = np.array([l + n for n in NUMBERS for l in LETTERS]).reshape(
 )
 
 # Create a mask to select specific containers
-mask = np.array(
-    [
-        # ["L", "K", "J", "I", "H", "G", "F", "E", "D", "C", "B", "A"],
-        ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],  # 9
-        ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],  # 8
-        ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],  # 7
-        ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],  # 6
-        ["0", "0", "0", "0", "0", "1", "1", "0", "0", "0", "0", "0"],  # 4
-        ["0", "0", "0", "0", "0", "1", "1", "0", "0", "0", "0", "0"],  # 5
-        ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],  # 3
-        ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],  # 2
-        ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],  # 1
-        ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],  # 0
-    ],
-).astype(int)
+mask = np.loadtxt("sources/selection.txt", delimiter="  ", dtype=str)
+mask = mask[1:, 1:].astype(int)
 masked_tags = matrix[np.where(mask == 1)].flatten().tolist()
 
 # The containers are not rotated
-all_data = np.loadtxt("containers.txt", delimiter="\t", dtype=str)
+all_data = np.loadtxt("sources/containers.txt", delimiter="\t", dtype=str)
 all_tags = all_data[:, 0].astype(str)
 indices = np.where(np.isin(all_tags, masked_tags))[0]
 
@@ -44,7 +32,7 @@ coords = all_data[indices, 1:].astype(float)
 tags = all_tags[indices].tolist()
 n_objects = coords.shape[0]
 
-# Define the 12 triangles composing the cube
+# Define the 12 triangles composing a cube
 faces = np.array(
     [
         [0, 3, 1],
@@ -112,12 +100,13 @@ bbox_vertices = mesh.bounding_box.vertices  # type: ignore
 # Calculate the bounding box dimensions according to the guidelines
 l = 5 * H_max
 L = 15 * H_max
+lz = 5 * CONTAINER_HEIGHT
 xmin = np.min(bbox_vertices[:, 0]) - l
 xmax = np.max(bbox_vertices[:, 0]) + L
 ymin = np.min(bbox_vertices[:, 1]) - l
 ymax = np.max(bbox_vertices[:, 1]) + l
 zmin = np.min(bbox_vertices[:, 2])
-zmax = np.max(bbox_vertices[:, 2]) + l
+zmax = np.max(bbox_vertices[:, 2]) + lz
 
 print(
     f"Bounding box (guidelines):\n x: [{xmin}, {xmax}],\n y: [{ymin}, {ymax}],\n z: [{zmin}, {zmax}]"

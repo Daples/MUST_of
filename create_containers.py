@@ -1,8 +1,12 @@
 from utils.rotate_mesh import rotate_geometry
 from stl import mesh
+from numpy.dtypes import StringDType
 
 import numpy as np
 import string
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
 
 # Constants
 CONTAINER_HEIGHT = 2.54
@@ -13,12 +17,15 @@ STL_FOLDER = "constant/triSurface/"
 H_max = 12.2
 
 # Create a matrix of letters and numbers
-matrix = np.array([l + n for n in NUMBERS for l in LETTERS]).reshape(
-    (len(NUMBERS), len(LETTERS))
+matrix = (
+    np.array([l + n for n in NUMBERS for l in LETTERS])
+    .reshape((len(NUMBERS), len(LETTERS)))
+    .astype(StringDType())
 )
+matrix[np.where(matrix == "H5")] = "VIP car H5"
 
 # Create a mask to select specific containers
-mask = np.loadtxt("sources/selection.txt", delimiter=" ", dtype=str)
+mask = np.loadtxt("sources/selection_all.txt", delimiter=" ", dtype=str)
 mask = mask[1:, :-1].astype(int)
 masked_tags = matrix[np.where(mask == 1)].flatten().tolist()
 
@@ -101,13 +108,81 @@ bbox_vertices = mesh.bounding_box.vertices  # type: ignore
 l = 5 * H_max
 L = 15 * H_max
 lz = 5 * CONTAINER_HEIGHT
-xmin = np.min(bbox_vertices[:, 0]) - l
-xmax = np.max(bbox_vertices[:, 0]) + L
-ymin = np.min(bbox_vertices[:, 1]) - l
-ymax = np.max(bbox_vertices[:, 1]) + l
+xmin = np.min(bbox_vertices[:, 0])
+xmax = np.max(bbox_vertices[:, 0])
+ymin = np.min(bbox_vertices[:, 1])
+ymax = np.max(bbox_vertices[:, 1])
 zmin = np.min(bbox_vertices[:, 2])
-zmax = np.max(bbox_vertices[:, 2]) + lz
+zmax = np.max(bbox_vertices[:, 2])
+
+xmin_guidelines = xmin - l
+xmax_guidelines = xmax + L
+ymin_guidelines = ymin - l
+ymax_guidelines = ymax + l
+zmin_guidelines = zmin
+zmax_guidelines = zmax + l
+
+# Calculate the blockage ratio
+area_blockage = (ymax - ymin) * CONTAINER_HEIGHT
+area_domain = (ymax_guidelines - ymin_guidelines) * (zmax_guidelines - zmin_guidelines)
+blockage_ratio = area_blockage / area_domain
+
+# Calculate directional blockage ratio
+l_building = ymax - ymin
+l_domain = ymax_guidelines - ymin_guidelines
+blockage_ratio_l = l_building / l_domain
+
+h_building = zmax - zmin
+h_domain = zmax_guidelines - zmin_guidelines
+blockage_ratio_h = h_building / h_domain
 
 print(
-    f"Bounding box (guidelines):\n x: [{xmin}, {xmax}],\n y: [{ymin}, {ymax}],\n z: [{zmin}, {zmax}]"
+    "Bounding box (guidelines):\n"
+    + f"x: [{xmin_guidelines}, {xmax_guidelines}],\n"
+    + f"y: [{ymin_guidelines}, {ymax_guidelines}],\n"
+    + f"z: [{zmin_guidelines}, {zmax_guidelines}],\n"
+    + f"Blockage ratio: {blockage_ratio:.2%}\n"
+    + f"Blockage ratio (Ly): {blockage_ratio_l:.2%}\n"
+    + f"Blockage ratio (Hz): {blockage_ratio_h:.2%}"
 )
+
+# Plot the bounding boxes
+fig = plt.figure(figsize=(15, 10))
+ax = fig.subplots(1, 1)
+
+ax.plot(
+    mesh.vertices[:, 0],  # type: ignore
+    mesh.vertices[:, 1],  # type: ignore
+    "o",
+    markersize=1,
+    color="black",
+    label="Vertices",
+)
+bbox = patches.Rectangle(
+    (xmin, ymin),
+    xmax - xmin,
+    ymax - ymin,
+    linewidth=1,
+    edgecolor="red",
+    facecolor="none",
+    label="Bounding box",
+)
+ax.add_patch(bbox)
+
+guidelines = patches.Rectangle(
+    (xmin_guidelines, ymin_guidelines),
+    xmax_guidelines - xmin_guidelines,
+    ymax_guidelines - ymin_guidelines,
+    linewidth=1,
+    edgecolor="blue",
+    facecolor="none",
+    label="Guidelines",
+)
+ax.add_patch(guidelines)
+
+plt.grid()
+plt.xlabel("X [m]")
+plt.ylabel("Y [m]")
+plt.legend()
+
+plt.show()

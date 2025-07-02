@@ -11,8 +11,20 @@ runApplication surfaceFeatureExtract
 
 runApplication blockMesh
 
-runApplication decomposePar
+runApplication decomposePar -force
 
-mpirun -np $nProcs snappyHexMesh -parallel -overwrite > log.snappyHexMesh
+runParallel snappyHexMesh -parallel
+
+# Copy initial conditions to each processor after sHM
+restore0Dir -processor
+
+for ((i = 0; i < $nProcs; i++ )); do
+    echo "Copying initial conditions to processor$i/2/"
+    if [ -d processor$i/0 ]; then
+        cp -r processor$i/0/* processor$i/2/
+    else
+        echo "No initial conditions found for processor $i."
+    fi
+done
 
 touch must.foam

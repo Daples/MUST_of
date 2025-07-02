@@ -10,7 +10,7 @@
 
 # Set the environment
 nProcs=64
-simEndTime=2000
+simEndTime=2002
 writeInterval=1000
 
 

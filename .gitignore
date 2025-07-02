@@ -14,7 +14,7 @@ constant/regionProperties
 *.eMesh
 
 # Time directories (numeric names)
-[0-9]/
+[0-9]*/
 
 # Logs and output
 log.*

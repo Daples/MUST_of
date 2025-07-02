@@ -1,3 +1,4 @@
+from utils.box import Box
 from utils.rotate_mesh import rotate_geometry
 from stl import mesh
 from numpy.dtypes import StringDType
@@ -10,11 +11,15 @@ import matplotlib.patches as patches
 
 # Constants
 CONTAINER_HEIGHT = 2.54
+CONTAINER_LENGTH = 12.2
+CONTAINER_WIDTH = 2.42
+
 VIP_CAR_HEIGHT = 3.51
 LETTERS = string.ascii_uppercase[:12][::-1]
 NUMBERS = string.digits[:10][::-1]
 STL_FOLDER = "constant/triSurface/"
-H_max = 12.2
+H_max = CONTAINER_LENGTH
+flow_dim = 1
 
 # Create a matrix of letters and numbers
 matrix = (
@@ -103,51 +108,86 @@ mesh = rotate_geometry(
 )
 
 bbox_vertices = mesh.bounding_box.vertices  # type: ignore
+bbox = Box(
+    xmin=np.min(bbox_vertices[:, 0]),
+    xmax=np.max(bbox_vertices[:, 0]),
+    ymin=np.min(bbox_vertices[:, 1]),
+    ymax=np.max(bbox_vertices[:, 1]),
+    zmin=np.min(bbox_vertices[:, 2]),
+    zmax=np.max(bbox_vertices[:, 2]),
+)
 
-# Calculate the bounding box dimensions according to the guidelines
-l = 5 * H_max
-L = 15 * H_max
-lz = 5 * CONTAINER_HEIGHT
-xmin = np.min(bbox_vertices[:, 0])
-xmax = np.max(bbox_vertices[:, 0])
-ymin = np.min(bbox_vertices[:, 1])
-ymax = np.max(bbox_vertices[:, 1])
-zmin = np.min(bbox_vertices[:, 2])
-zmax = np.max(bbox_vertices[:, 2])
-
-xmin_guidelines = xmin - l
-xmax_guidelines = xmax + L
-ymin_guidelines = ymin - l
-ymax_guidelines = ymax + l
-zmin_guidelines = zmin
-zmax_guidelines = zmax + l
+# Guidelines bbox
+l_xm = 5 * H_max
+l_xp = 15 * H_max
+l_y = 5 * H_max
+l_z = 5 * H_max
+box_guidelines = bbox.expand(l_xm, l_xp, l_y, l_z)
 
 # Calculate the blockage ratio
-area_blockage = (ymax - ymin) * CONTAINER_HEIGHT
-area_domain = (ymax_guidelines - ymin_guidelines) * (zmax_guidelines - zmin_guidelines)
+area_blockage = bbox.compute_area(axis=flow_dim)
+area_domain = box_guidelines.compute_area(axis=flow_dim)
 blockage_ratio = area_blockage / area_domain
 
 # Calculate directional blockage ratio
-l_building = ymax - ymin
-l_domain = ymax_guidelines - ymin_guidelines
+l_building = bbox.get_length("y")
+l_domain = box_guidelines.get_length("y")
 blockage_ratio_l = l_building / l_domain
 
-h_building = zmax - zmin
-h_domain = zmax_guidelines - zmin_guidelines
+h_building = bbox.get_length("z")
+h_domain = box_guidelines.get_length("z")
 blockage_ratio_h = h_building / h_domain
 
 print(
     "Bounding box (guidelines):\n"
-    + f"x: [{xmin_guidelines}, {xmax_guidelines}],\n"
-    + f"y: [{ymin_guidelines}, {ymax_guidelines}],\n"
-    + f"z: [{zmin_guidelines}, {zmax_guidelines}],\n"
+    + f"x: [{box_guidelines.xmin}, {box_guidelines.xmax}],\n"
+    + f"y: [{box_guidelines.ymin}, {box_guidelines.ymax}],\n"
+    + f"z: [{box_guidelines.zmin}, {box_guidelines.zmax}],\n"
     + f"Blockage ratio: {blockage_ratio:.2%}\n"
     + f"Blockage ratio (Ly): {blockage_ratio_l:.2%}\n"
     + f"Blockage ratio (Hz): {blockage_ratio_h:.2%}"
 )
 
+# Corrected bbox
+l_xm = 5 * H_max
+l_xp = 20 * H_max
+l_y = 10 * H_max
+l_z = 4 * H_max
+box_corrected = bbox.expand(l_xm, l_xp, l_y, l_z)
+
+# Calculate the blockage ratio
+area_blockage = bbox.compute_area(axis=flow_dim)
+area_domain = box_corrected.compute_area(axis=flow_dim)
+blockage_ratio = area_blockage / area_domain
+
+# Calculate directional blockage ratio (all containers)
+l_building = bbox.get_length("y")
+l_domain = box_corrected.get_length("y")
+blockage_ratio_l = l_building / l_domain
+
+h_buildings = bbox.get_length("z")
+h_domain = box_corrected.get_length("z")
+blockage_ratio_h = h_buildings / h_domain
+
+# Directional blockage ratio (single container at largest blockage, 45°)
+l_building = (CONTAINER_LENGTH**2 + CONTAINER_WIDTH**2) ** 0.5
+l_domain = box_corrected.get_length("y")
+blockage_ratio_container = l_building / l_domain
+
+print(
+    "Bounding box (corrected):\n"
+    + f"x: [{box_corrected.xmin}, {box_corrected.xmax}],\n"
+    + f"y: [{box_corrected.ymin}, {box_corrected.ymax}],\n"
+    + f"z: [{box_corrected.zmin}, {box_corrected.zmax}],\n"
+    + f"Blockage ratio: {blockage_ratio:.2%}\n"
+    + f"Blockage ratio (Ly): {blockage_ratio_l:.2%}\n"
+    + f"Blockage ratio (Hz): {blockage_ratio_h:.2%}\n"
+    + f"Blockage ratio (Container): {blockage_ratio_container:.2%}"
+)
+
 # Plot the bounding boxes
-fig = plt.figure(figsize=(15, 10))
+# fig = plt.figure(figsize=(10, 7))
+fig = plt.figure()
 ax = fig.subplots(1, 1)
 
 ax.plot(
@@ -159,9 +199,9 @@ ax.plot(
     label="Vertices",
 )
 bbox = patches.Rectangle(
-    (xmin, ymin),
-    xmax - xmin,
-    ymax - ymin,
+    (bbox.xmin, bbox.ymin),
+    bbox.get_length("x"),
+    bbox.get_length("y"),
     linewidth=1,
     edgecolor="red",
     facecolor="none",
@@ -170,9 +210,9 @@ bbox = patches.Rectangle(
 ax.add_patch(bbox)
 
 guidelines = patches.Rectangle(
-    (xmin_guidelines, ymin_guidelines),
-    xmax_guidelines - xmin_guidelines,
-    ymax_guidelines - ymin_guidelines,
+    (box_guidelines.xmin, box_guidelines.ymin),
+    box_guidelines.get_length("x"),
+    box_guidelines.get_length("y"),
     linewidth=1,
     edgecolor="blue",
     facecolor="none",
@@ -180,9 +220,20 @@ guidelines = patches.Rectangle(
 )
 ax.add_patch(guidelines)
 
+corrected = patches.Rectangle(
+    (box_corrected.xmin, box_corrected.ymin),
+    box_corrected.get_length("x"),
+    box_corrected.get_length("y"),
+    linewidth=1,
+    edgecolor="orange",
+    facecolor="none",
+    label="Corrected",
+)
+ax.add_patch(corrected)
+
 plt.grid()
 plt.xlabel("X [m]")
 plt.ylabel("Y [m]")
 plt.legend()
-
+plt.savefig("figs/bounding_boxes.pdf", bbox_inches="tight")
 plt.show()

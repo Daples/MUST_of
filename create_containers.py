@@ -138,21 +138,27 @@ h_building = bbox.get_length("z")
 h_domain = box_guidelines.get_length("z")
 blockage_ratio_h = h_building / h_domain
 
+# Directional blockage ratio (single container at largest blockage, 45°)
+l_building = (CONTAINER_LENGTH**2 + CONTAINER_WIDTH**2) ** 0.5
+l_domain = box_guidelines.get_length("y")
+blockage_ratio_container = l_building / l_domain
+
 print(
-    "Bounding box (guidelines):\n"
+    "\nBounding box (guidelines):\n"
     + f"x: [{box_guidelines.xmin}, {box_guidelines.xmax}],\n"
     + f"y: [{box_guidelines.ymin}, {box_guidelines.ymax}],\n"
     + f"z: [{box_guidelines.zmin}, {box_guidelines.zmax}],\n"
     + f"Blockage ratio: {blockage_ratio:.2%}\n"
     + f"Blockage ratio (Ly): {blockage_ratio_l:.2%}\n"
-    + f"Blockage ratio (Hz): {blockage_ratio_h:.2%}"
+    + f"Blockage ratio (Hz): {blockage_ratio_h:.2%}\n"
+    + f"Blockage ratio (Container): {blockage_ratio_container:.2%}"
 )
 
 # Corrected bbox
 l_xm = 5 * H_max
 l_xp = 20 * H_max
 l_y = 10 * H_max
-l_z = 4 * H_max
+l_z = 5 * H_max
 box_corrected = bbox.expand(l_xm, l_xp, l_y, l_z)
 
 # Calculate the blockage ratio
@@ -175,7 +181,7 @@ l_domain = box_corrected.get_length("y")
 blockage_ratio_container = l_building / l_domain
 
 print(
-    "Bounding box (corrected):\n"
+    "\nBounding box (corrected):\n"
     + f"x: [{box_corrected.xmin}, {box_corrected.xmax}],\n"
     + f"y: [{box_corrected.ymin}, {box_corrected.ymax}],\n"
     + f"z: [{box_corrected.zmin}, {box_corrected.zmax}],\n"
@@ -236,4 +242,4 @@ plt.xlabel("X [m]")
 plt.ylabel("Y [m]")
 plt.legend()
 plt.savefig("figs/bounding_boxes.pdf", bbox_inches="tight")
-plt.show()
+# plt.show()

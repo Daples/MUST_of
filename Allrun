@@ -4,11 +4,24 @@
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 
 # Run solver
-restore0Dir -processor
-
 runParallel $(getApplication) -opt-switch nPollProcInterfaces=-1
 
-runApplication reconstructPar
+
+# Fix ProcAdressing files
+nProcs=$(getNumberOfProcessors)
+
+for ((i = 0; i < $nProcs; i++ )); do
+    echo "Copying ProcAdressing files in processor$i/"
+
+    for dir in ./processor$i/[0-9]*/ ;  do
+        echo "Copying to $dir"
+        mkdir -p $dir/polyMesh
+        cp ./processor$i/2/polyMesh/* $dir/polyMesh/
+    done
+done
+
+runApplication reconstructParMesh -time 2:
+runApplication reconstructPar -time 2:
 
 #------------------------------------------------------------------------------
 

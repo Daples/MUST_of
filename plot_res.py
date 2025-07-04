@@ -39,7 +39,7 @@ ax1 = fig.add_subplot(111)
 ax1.plot(iteration, p, "k-")
 ax1.plot(iteration, Ux, "b-")
 ax1.plot(iteration, Uy, "c-")
-ax1.plot(iteration, Uz, "g-")
+ax1.plot(iteration, Uz, "-", color="orange")
 ax1.plot(iteration, k, "r-")
 ax1.plot(iteration, epsilon, "g-")
 

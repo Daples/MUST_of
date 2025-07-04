@@ -31,6 +31,7 @@ slurm-*
 .DS_Store
 
 # Paraview and visualization files
+VTK/*
 *.foam
 *.OpenFOAM
 *.vtk

@@ -6,7 +6,6 @@ from numpy.dtypes import StringDType
 import numpy as np
 import string
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 
 
 # Constants
@@ -109,6 +108,7 @@ mesh = rotate_geometry(
 
 bbox_vertices = mesh.bounding_box.vertices  # type: ignore
 bbox = Box(
+    name="Bounding box",
     xmin=np.min(bbox_vertices[:, 0]),
     xmax=np.max(bbox_vertices[:, 0]),
     ymin=np.min(bbox_vertices[:, 1]),
@@ -122,77 +122,21 @@ l_xm = 5 * H_max
 l_xp = 15 * H_max
 l_y = 5 * H_max
 l_z = 5 * H_max
-box_guidelines = bbox.expand(l_xm, l_xp, l_y, l_z)
+box_guidelines = bbox.expand("Guidelines", l_xm, l_xp, l_y, l_z)
 
-# Calculate the blockage ratio
-area_blockage = bbox.compute_area(axis=flow_dim)
-area_domain = box_guidelines.compute_area(axis=flow_dim)
-blockage_ratio = area_blockage / area_domain
+# Evaluate guidelines w.r.t. buildings box
+L_max = (CONTAINER_LENGTH**2 + CONTAINER_WIDTH**2) ** 0.5
+box_guidelines.evaluate(bbox, L_max, flow_dim)
 
-# Calculate directional blockage ratio
-l_building = bbox.get_length("y")
-l_domain = box_guidelines.get_length("y")
-blockage_ratio_l = l_building / l_domain
-
-h_building = bbox.get_length("z")
-h_domain = box_guidelines.get_length("z")
-blockage_ratio_h = h_building / h_domain
-
-# Directional blockage ratio (single container at largest blockage, 45°)
-l_building = (CONTAINER_LENGTH**2 + CONTAINER_WIDTH**2) ** 0.5
-l_domain = box_guidelines.get_length("y")
-blockage_ratio_container = l_building / l_domain
-
-print(
-    "\nBounding box (guidelines):\n"
-    + f"x: [{box_guidelines.xmin}, {box_guidelines.xmax}],\n"
-    + f"y: [{box_guidelines.ymin}, {box_guidelines.ymax}],\n"
-    + f"z: [{box_guidelines.zmin}, {box_guidelines.zmax}],\n"
-    + f"Blockage ratio: {blockage_ratio:.2%}\n"
-    + f"Blockage ratio (Ly): {blockage_ratio_l:.2%}\n"
-    + f"Blockage ratio (Hz): {blockage_ratio_h:.2%}\n"
-    + f"Blockage ratio (Container): {blockage_ratio_container:.2%}"
-)
-
-# Corrected bbox
+# Proposal bbox (expanded to better fit the wake)
 l_xm = 5 * H_max
 l_xp = 20 * H_max
 l_y = 10 * H_max
 l_z = 5 * H_max
-box_corrected = bbox.expand(l_xm, l_xp, l_y, l_z)
-
-# Calculate the blockage ratio
-area_blockage = bbox.compute_area(axis=flow_dim)
-area_domain = box_corrected.compute_area(axis=flow_dim)
-blockage_ratio = area_blockage / area_domain
-
-# Calculate directional blockage ratio (all containers)
-l_building = bbox.get_length("y")
-l_domain = box_corrected.get_length("y")
-blockage_ratio_l = l_building / l_domain
-
-h_buildings = bbox.get_length("z")
-h_domain = box_corrected.get_length("z")
-blockage_ratio_h = h_buildings / h_domain
-
-# Directional blockage ratio (single container at largest blockage, 45°)
-l_building = (CONTAINER_LENGTH**2 + CONTAINER_WIDTH**2) ** 0.5
-l_domain = box_corrected.get_length("y")
-blockage_ratio_container = l_building / l_domain
-
-print(
-    "\nBounding box (corrected):\n"
-    + f"x: [{box_corrected.xmin}, {box_corrected.xmax}],\n"
-    + f"y: [{box_corrected.ymin}, {box_corrected.ymax}],\n"
-    + f"z: [{box_corrected.zmin}, {box_corrected.zmax}],\n"
-    + f"Blockage ratio: {blockage_ratio:.2%}\n"
-    + f"Blockage ratio (Ly): {blockage_ratio_l:.2%}\n"
-    + f"Blockage ratio (Hz): {blockage_ratio_h:.2%}\n"
-    + f"Blockage ratio (Container): {blockage_ratio_container:.2%}"
-)
+box_proposal = bbox.expand("Proposal", l_xm, l_xp, l_y, l_z)
+box_proposal.evaluate(bbox, L_max, flow_dim)
 
 # Plot the bounding boxes
-# fig = plt.figure(figsize=(10, 7))
 fig = plt.figure()
 ax = fig.subplots(1, 1)
 
@@ -204,42 +148,12 @@ ax.plot(
     color="black",
     label="Vertices",
 )
-bbox = patches.Rectangle(
-    (bbox.xmin, bbox.ymin),
-    bbox.get_length("x"),
-    bbox.get_length("y"),
-    linewidth=1,
-    edgecolor="red",
-    facecolor="none",
-    label="Bounding box",
-)
-ax.add_patch(bbox)
-
-guidelines = patches.Rectangle(
-    (box_guidelines.xmin, box_guidelines.ymin),
-    box_guidelines.get_length("x"),
-    box_guidelines.get_length("y"),
-    linewidth=1,
-    edgecolor="blue",
-    facecolor="none",
-    label="Guidelines",
-)
-ax.add_patch(guidelines)
-
-corrected = patches.Rectangle(
-    (box_corrected.xmin, box_corrected.ymin),
-    box_corrected.get_length("x"),
-    box_corrected.get_length("y"),
-    linewidth=1,
-    edgecolor="orange",
-    facecolor="none",
-    label="Corrected",
-)
-ax.add_patch(corrected)
+bbox.plot(ax, "red")
+box_guidelines.plot(ax, "blue")
+box_proposal.plot(ax, "orange")
 
 plt.grid()
 plt.xlabel("X [m]")
 plt.ylabel("Y [m]")
 plt.legend()
 plt.savefig("figs/bounding_boxes.pdf", bbox_inches="tight")
-# plt.show()

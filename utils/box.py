@@ -118,3 +118,20 @@ class Box:
             + f"Blockage ratio (H{z}, all buildings): {blockage_ratio_h:.2%}\n"
             + f"Blockage ratio (Single container): {blockage_ratio_container:.2%}"
         )
+
+    def get_expansion(
+        self, box_buildings: Box, H_max: float | None = None
+    ) -> tuple[float, float, float, float]:
+        """"""
+
+        l_xm = abs(self.xmin - box_buildings.xmin)
+        l_xp = abs(self.xmax - box_buildings.xmax)
+        l_y = abs(self.ymax - box_buildings.ymax)
+        l_z = abs(self.zmax - box_buildings.zmax)
+
+        if H_max is not None:
+            print(f"l_xm: {l_xm / H_max:.2f}")
+            print(f"l_xp: {l_xp / H_max:.2f}")
+            print(f"l_y: {l_y / H_max:.2f}")
+            print(f"l_z: {l_z / H_max:.2f}")
+        return l_xm, l_xp, l_y, l_z

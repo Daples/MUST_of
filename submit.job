@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name="rans-MUST"    # Name of the job for checking
-#SBATCH --time=00:30:00                 # Wall clock time requested
+#SBATCH --time=12:00:00                 # Wall clock time requested
 #SBATCH --partition=compute-p2          # Which partition?
 #SBATCH --account=research-ceg-gse      # Account to charge
 #SBATCH --tasks=64                      # Number of tasks
@@ -10,7 +10,7 @@
 
 # Set the environment
 nProcs=64
-simEndTime=3002
+simEndTime=4002
 writeInterval=1000
 
 

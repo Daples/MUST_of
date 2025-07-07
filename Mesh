@@ -3,7 +3,7 @@
 
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 
-nProcs=$1		# Number of processors used for simpleFoam
+nProcs=$(getNumberOfProcessors)
 
 cp -r 0.orig/ 0
 

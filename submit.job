@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name="rans-MUST"    # Name of the job for checking
+#SBATCH --job-name="med-RANS-MUST"    # Name of the job for checking
 #SBATCH --time=12:00:00                 # Wall clock time requested
 #SBATCH --partition=compute-p2          # Which partition?
 #SBATCH --account=research-ceg-gse      # Account to charge
@@ -25,8 +25,10 @@ sed -i "s/numberOfSubdomains.*/numberOfSubdomains $nProcs;/g" system/decomposePa
 cat system/decomposeParDict | grep "numberOfSubdomains"
 
 # Change simulation end time
-sed -i "s/endTime.*/endTime $simEndTime;/g" system/controlDict
-cat system/decomposeParDict | grep "numberOfSubdomains"
+line=25
+sed_command="${line} s/\(endTime[[:space:]]*\)[0-9]\{1,\};/\1${simEndTime};/"
+eval "sed -i \"$sed_command\" system/controlDict"
+cat system/controlDict| grep "endTime"
 
 # Change write interval
 sed -i "s/writeInterval.*/writeInterval $writeInterval;/g" system/controlDict

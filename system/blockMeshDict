@@ -22,21 +22,21 @@ domain
     yMax   80;
     zMin     0;
     zMax   30;
-    xCells  300;
-    yCells  175;
-    zCells  30;
+    xCells  100;
+    yCells  25;
+    zCells  10;
 }
 // All domain
 // {
 //     xMin   -200;
-//     xMax   315;
-//     yMin   -200; 
-//     yMax   200;
+//     xMax   500;
+//     yMin   -250; 
+//     yMax   250;
 //     zMin     0;
-//     zMax   60;
-//     xCells  515;
-//     yCells  400;
-//     zCells  60;
+//     zMax   65;
+//     xCells  700;
+//     yCells  500;
+//     zCells  65;
 // }
 
 scale   1;

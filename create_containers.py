@@ -131,13 +131,21 @@ box_guidelines.evaluate(bbox, L_max, flow_dim)
 # Proposal bbox (expanded to better fit the wake)
 l_xm = 5 * H_max
 l_xp = 20 * H_max
-l_y = 10 * H_max
+l_y = 8 * H_max
 l_z = 5 * H_max
 box_proposal = bbox.expand("Proposal", l_xm, l_xp, l_y, l_z)
 box_proposal.evaluate(bbox, L_max, flow_dim)
 
+# Simulation bbox (rounded for easier handling)
+box_sim = Box("Simulation", xmin=-200, xmax=500, ymin=-250, ymax=250, zmin=0, zmax=65)
+box_sim.evaluate(bbox, L_max, flow_dim)
+
+# Get expansion values in terms of H_max
+l_xm, l_xp, l_y, l_z = box_sim.get_expansion(bbox, H_max=H_max)
+
+
 # Plot the bounding boxes
-fig = plt.figure()
+fig = plt.figure(figsize=(8, 5))
 ax = fig.subplots(1, 1)
 
 ax.plot(
@@ -151,8 +159,9 @@ ax.plot(
 bbox.plot(ax, "red")
 box_guidelines.plot(ax, "blue")
 box_proposal.plot(ax, "orange")
+box_sim.plot(ax, "darkviolet")
 
-plt.grid()
+plt.grid(alpha=0.4)
 plt.xlabel("X [m]")
 plt.ylabel("Y [m]")
 plt.legend()

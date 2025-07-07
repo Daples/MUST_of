@@ -10,7 +10,7 @@
 
 # Set the environment
 nProcs=64
-simEndTime=2002
+simEndTime=3002
 writeInterval=1000
 
 
@@ -32,9 +32,10 @@ cat system/decomposeParDict | grep "numberOfSubdomains"
 sed -i "s/writeInterval.*/writeInterval $writeInterval;/g" system/controlDict
 cat system/controlDict | grep "writeInterval"
 
+# Execute
 ./Clean
-./Mesh $nProcs
-# ./Allrun $nProcs
+./Mesh
+./Allrun
 
 #------------------------------------------------------------------------------
 

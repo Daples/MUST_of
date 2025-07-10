@@ -14,18 +14,18 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-Uinlet          (5 0 0);
+#include        "include/ABLConditions"
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (2.5 0 0);
+internalField   uniform ($Uinternal 0 0);
 
 boundaryField
 {
     inlet
     {
-        type            fixedValue;
-        value           uniform $Uinlet;
+        type            atmBoundaryLayerInletVelocity;
+        #include        "include/ABLConditions"
     }
 
     outlet

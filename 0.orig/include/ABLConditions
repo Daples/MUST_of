@@ -1,0 +1,18 @@
+/* ABL setup */
+Uref                5.0;                    // Reference bulk velocity in m/s
+Zref                8.0;                    // Reference height for Uref in m
+zDir                (0 0 1);                // Specify the coordinate corresponding to vertical
+flowDir             (1 0 0);                // Flow direction
+z0                  uniform 0.0165;         // Terrain roughness in m
+z0_                 0.0165;                 // z0 for calculations
+d                   uniform 0.0;            // Zero-plane displacement
+kappa               0.41;                   // von Karman constant
+Cmu                 0.09;                   // C_mu
+initABL             true;                   // Initialize ABL conditions
+value               uniform 0;              // Dummy fallback when initABL=false
+
+/* Calculations */
+Uinternal           #calc "$Uref / 2";      // Initial internal flow velocity
+Ustar               #calc "( $Uref * $kappa ) / log(( $Zref + $z0_ )/ $z0_ )";
+kInlet              #calc "pow($Ustar, 2) / sqrt( $Cmu )";
+epsilonInlet        #calc "pow($Ustar, 3) / ( $kappa * ( $Zref + $z0_ ))";

@@ -44,3 +44,5 @@ cat system/controlDict | grep "writeInterval"
 touch must.foam
 
 squeue -j $SLURM_JOBID
+echo "-------- Efficiency ---------"
+seff $SLURM_JOBID

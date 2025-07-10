@@ -29,6 +29,7 @@ slurm-*
 *.swp
 *.swo
 .DS_Store
+dynamicCode/*
 
 # Paraview and visualization files
 VTK/*

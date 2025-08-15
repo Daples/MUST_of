@@ -18,6 +18,13 @@ class Box:
     zmax: float
     dims: ClassVar[str] = "xyz"
 
+    def __post_init__(self):
+        self.xmin = float(self.xmin)
+        self.xmax = float(self.xmax)
+        self.ymin = float(self.ymin)
+        self.ymax = float(self.ymax)
+        self.zmin = float(self.zmax)
+
     def compute_area(self, axis: int) -> float:
         """Compute the area of the box.
 
@@ -83,6 +90,10 @@ class Box:
             **kwargs,
         )
         ax.add_patch(bbox)
+
+        settings = {"fontsize": 10, "verticalalignment": "top"}
+        ax.text(self.xmin, self.ymin, f"({self.xmin:.2f}, {self.ymin:.2f})", **settings)
+        ax.text(self.xmax, self.ymax, f"({self.xmax:.2f}, {self.ymax:.2f})", **settings)
         return ax
 
     def evaluate(self, bbox_buildings: Box, L_max: float, flow_dim: int) -> None:

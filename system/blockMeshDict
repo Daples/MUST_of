@@ -21,10 +21,10 @@ domain
     yMin   -80; 
     yMax   80;
     zMin     0;
-    zMax   30;
-    xCells  100;
-    yCells  25;
-    zCells  10;
+    zMax   20;
+    xCells  200;
+    yCells  100;
+    zCells  15;
 }
 // All domain
 // {

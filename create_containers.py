@@ -32,7 +32,7 @@ matrix = (
 matrix[np.where(matrix == "H5")] = "VIP car H5"
 
 # Create a mask to select specific containers
-mask = np.loadtxt("sources/selection_all.txt", delimiter=" ", dtype=str)
+mask = np.loadtxt("sources/selection.txt", delimiter=" ", dtype=str)
 mask = mask[1:, :-1].astype(int)
 masked_tags = matrix[np.where(mask == 1)].flatten().tolist()
 

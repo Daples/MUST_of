@@ -14,7 +14,12 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-buildings.stl
+MUST.stl
+{
+    #includeEtc "caseDicts/surface/surfaceFeatureExtractDict.cfg"
+}
+
+car.stl
 {
     #includeEtc "caseDicts/surface/surfaceFeatureExtractDict.cfg"
 }

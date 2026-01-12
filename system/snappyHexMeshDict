@@ -1,9 +1,9 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-  =========                 |
-  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Version:  7
-     \\/     M anipulation  |
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
@@ -13,10 +13,54 @@ FoamFile
     object      snappyHexMeshDict;
 }
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+/*----------------- Bounding Box ------------------*/
+//Overall domain bounding box (-195 -195 0) (195 195 40)
+//Geometry extension (-86.58 -98.9042 0) (85.9732 99.2287 4)
+x_min -90;
+y_min -100;
+z_min  0;
+x_max  90;
+y_max  100;
+z_max  4;  //approximately tallest building
+//K 1.0;
+
+//ip: a minor change to work with building height, not zmax
+K #calc "($z_max - $z_min)/$z_max";
+F 0.3; // just a factor to reduce some things
+
+// box refinement definition from closest to the buildings to furthest
+// box 1
+x1_min #calc "$x_min - $K*$z_max";
+x1_max #calc "$x_max + $K*$z_max";
+y1_min #calc "$y_min - $K*$z_max";
+y1_max #calc "$y_max + 3*$K*$z_max";
+z1_min $z_min;
+z1_max #calc "$z_max + $F*$K*$z_max";
+
+// box 2
+x2_min #calc "$x_min - 2*$K*$z_max";
+x2_max #calc "$x_max + 2*$K*$z_max";
+y2_min #calc "$y_min - 2*$K*$z_max";
+y2_max #calc "$y_max + 6*$K*$z_max";
+z2_min $z_min;
+z2_max #calc "$z_max + 1.2*$K*$z_max";
+
+// box 3
+x3_min -195;
+x3_max 195;
+y3_min -195;
+y3_max 195;
+z3_min 0;
+z3_max 2;
+
+
+
+
 // Which of the steps to run
-castellatedMesh true;		// Only break the mesh into approx. voxels
-snap            true;		// Snap the points to the geometry after approx. voxel
-addLayers       false;		// Add boundary layer mesh close to the wall
+castellatedMesh true;
+snap            false;
+addLayers       false;
 
 
 // Geometry. Definition of all surfaces. All surfaces are of class
@@ -27,16 +71,48 @@ addLayers       false;		// Add boundary layer mesh close to the wall
 // - to 'snap' the mesh boundary to the surface
 geometry
 {
-    // refinementBox
-    // {
-    //     type searchableBox;
-    //     min (-130 -400 0);
-    //     max (400 300 25);
-    // }
-
-    buildings
+    box1
     {
-        file "buildings.stl";
+        type searchableBox;
+        min ($x1_min $y1_min $z1_min);
+        max ($x1_max $y1_max $z1_max);
+    }
+
+    box2
+    {
+        type searchableBox;
+        min ($x2_min $y2_min $z2_min);
+        max ($x2_max $y2_max $z2_max);
+    }
+
+    box3
+    {
+        type searchableBox;
+        min ($x3_min $y3_min $z3_min);
+        max ($x3_max $y3_max $z3_max);
+    }
+
+    Buildings
+    {
+        file "MUST.stl";
+        type triSurfaceMesh;
+    }
+    
+    Car
+    {
+        file "car.stl";
+        type triSurfaceMesh;
+    }
+
+    Building_Refinement
+    {
+        file "MUST.stl";
+        type triSurfaceMesh;
+    }
+
+    Car_Refinement
+    {
+        file "car.stl";
         type triSurfaceMesh;
     }
 };
@@ -46,68 +122,76 @@ geometry
 castellatedMeshControls
 {
 
-    maxLocalCells 1000000;
-    maxGlobalCells 200000000;
+    maxLocalCells 20000000;
+    maxGlobalCells 70000000;
     minRefinementCells 0;
     maxLoadUnbalance 0.10;
     nCellsBetweenLevels 4;
-
-    // This is feature edges for the geometry at hand
     features
     (
 	{
-   	    	file "buildings.eMesh";
-            	level 4;
+   	    file "MUST.eMesh";
+            level 3;
 	}
+	
+	{
+   	    file "car.eMesh";
+            level 3;
+	}
+
     );
 
     refinementSurfaces
     {
-        buildings
+        Buildings
         {
-            // Surface-wise min and max refinement level
-            level (4 4);
+            level (3 3);
+        }
 
-            // patchInfo
-            // {
-            //     type wall;
-            // }
-            //- Optional angle to detect small-large cell situation
-            //  perpendicular to the surface. Is the angle of face w.r.t.
-            //  the local surface normal. Use on flat(ish) surfaces only.
-            //  Otherwise leave out or set to negative number.
-            // perpendicularAngle 10;
-
-
-            //- Optional faceZone and (for closed surface) cellZone with
-            //  how to select the cells that are in the cellZone
-            //  (inside / outside / specified insidePoint)
-            // faceZone sphere;
-            // cellZone sphere;
-            // cellZoneInside inside;  // outside/insidePoint
+	Car
+        {
+            level (3 3);
         }
     }
 
-
-    resolveFeatureAngle 10;	// Any angle greater than X degrees will be refined and resolved
+    resolveFeatureAngle 30;
 
     refinementRegions
     {
-        // refinementBox
-        // {
-        //     mode inside;
-        //     levels ((1E15 2));
-        // }
+        box1
+        {
+            mode inside;
+            levels ((1E15 2));
+        }
 
-        // Extra refinment for buildings
-        // buildings
-        // {
-        //     mode distance;
-        //     levels ((4.0 5) (12.0 4) (25.0 3));
-        // }
+        box2
+        {
+            mode inside;
+            levels ((1E15 1));
+        }
+
+        box3
+        {
+            mode inside;
+            levels ((1E15 3));
+        }
+
+	// Extra refinment for buildings
+	Building_Refinement
+	{
+           mode distance;
+           levels ((4.0 3) (12.0 2) (25.0 1));
+	}
+
+	Car_Refinement
+	{
+           mode distance;
+           levels ((4.0 3) (12.0 2) (25.0 1));
+	}
+
     }
 
-    locationInMesh (0.1 0.1 10.2345);
+    locationInMesh (0 0 0.58676);
     allowFreeStandingZoneFaces true;
 }
 
@@ -118,168 +202,41 @@ snapControls
     tolerance 4.0;
     nSolveIter 50;
     nRelaxIter 5;
-    // Feature snapping
-
-    //- Number of feature edge snapping iterations.
-    //  Leave out altogether to disable.
     nFeatureSnapIter 10;
-
-    //- Detect (geometric only) features by sampling the surface
-    //  (default=false).
     implicitFeatureSnap false;
-
-    //- Use castellatedMeshControls::features (default = true)
     explicitFeatureSnap true;
-
-    //- Detect points on multiple surfaces (only for explicitFeatureSnap)
     multiRegionFeatureSnap false;
 }
 
 // Settings for the layer addition.
 addLayersControls
 {
-    // Are the thickness parameters below relative to the undistorted
-    // size of the refined cell outside layer (true) or absolute sizes (false).
-    relativeSizes false;
-
-    // Layer thickness specification. This can be specified in one of following
-    // ways:
-    // - expansionRatio and finalLayerThickness (cell nearest internal mesh)
-    // - expansionRatio and firstLayerThickness (cell on surface)
-    // - overall thickness and firstLayerThickness
-    // - overall thickness and finalLayerThickness
-    // - overall thickness and expansionRatio
-    //
-    // Note: the mode thus selected is global, i.e. one cannot override the
-    //       mode on a per-patch basis (only the values can be overridden)
-
-    // Expansion factor for layer mesh
-    expansionRatio 1.0;
-
-    // Wanted thickness of the layer furthest away from the wall.
-    // If relativeSizes this is relative to undistorted size of cell
-    // outside layer.
-    //finalLayerThickness 0.3;
-
-    // Wanted thickness of the layer next to the wall.
-    // If relativeSizes this is relative to undistorted size of cell
-    // outside layer.
+    relativeSizes true;
+    expansionRatio 1.2;
     firstLayerThickness 0.4;
-
-    // Wanted overall thickness of layers.
-    // If relativeSizes this is relative to undistorted size of cell
-    // outside layer.
-    // thickness 0.5
-
-    // Minimum overall thickness of total layers. If for any reason layer
-    // cannot be above minThickness do not add layer.
-    // If relativeSizes this is relative to undistorted size of cell
-    // outside layer..
     minThickness 0.4;
-
-
-    // Per final patch (so not geometry!) the layer information
-    // Note: This behaviour changed after 21x. Any non-mentioned patches
-    //       now slide unless:
-    //          - nSurfaceLayers is explicitly mentioned to be 0.
-    //          - angle to nearest surface < slipFeatureAngle (see below)
     layers
     {
-        // buildings
-        // {
-        //     nSurfaceLayers 4;
+        Buildings
+        {
+            nSurfaceLayers 3;
 
-        // }
-        // Disable any mesh shrinking and layer addition on any point of
-        // a patch by setting nSurfaceLayers to 0
-        //frozenPatches
-        //{
-        //    nSurfaceLayers 0;
-        //}
+        }
     }
 
-    // If points get not extruded do nGrow layers of connected faces that are
-    // also not grown. This helps convergence of the layer addition process
-    // close to features.
-    // Note: changed(corrected) w.r.t 17x! (didn't do anything in 17x)
     nGrow 0;
-
-    // Advanced settings
-
-    // Static analysis of starting mesh
-
-    // When not to extrude surface. 0 is flat surface, 90 is when two faces
-    // are perpendicular
-    featureAngle 45;
-
-    // Stop layer growth on highly warped cells
+    featureAngle 130;
     maxFaceThicknessRatio 0.5;
-
-
-    // Patch displacement
-
-    // Number of smoothing iterations of surface normals
     nSmoothSurfaceNormals 1;
-
-    // Smooth layer thickness over surface patches
     nSmoothThickness 10;
-
-    // Medial axis analysis
-
-    // Angle used to pick up medial axis points
-    // Note: changed(corrected) w.r.t 17x! 90 degrees corresponds to 130
-    // in 17x.
     minMedialAxisAngle 90;
-
-    // Reduce layer growth where ratio thickness to medial
-    // distance is large
     maxThicknessToMedialRatio 0.3;
-
-    // Number of smoothing iterations of interior mesh movement direction
     nSmoothNormals 3;
-
-    // Optional: limit the number of steps walking away from the surface.
-    // Default is unlimited.
-    // nMedialAxisIter 10;
-
-    // Optional: smooth displacement after medial axis determination.
-    // default is 0.
-    // nSmoothDisplacement 90;
-
-    // (wip)Optional: do not extrude a point if none of the surrounding points is
-    // not extruded. Default is false.
-    // detectExtrusionIsland true;
-
-    // Mesh shrinking
-
-    // Optional: at non-patched sides allow mesh to slip if extrusion
-    // direction makes angle larger than slipFeatureAngle. Default is
-    // 0.5*featureAngle.
     slipFeatureAngle 30;
-
-    // Maximum number of snapping relaxation iterations. Should stop
-    // before upon reaching a correct mesh.
     nRelaxIter 5;
-
-    // Create buffer region for new layer terminations
     nBufferCellsNoExtrude 0;
-
-    // Overall max number of layer addition iterations. The mesher will
-    // exit if it reaches this number of iterations; possibly with an
-    // illegal mesh.
     nLayerIter 50;
-
-    // Max number of iterations after which relaxed meshQuality controls
-    // get used. Up to nRelaxedIter it uses the settings in
-    // meshQualityControls,
-    // after nRelaxedIter it uses the values in
-    // meshQualityControls::relaxed.
     nRelaxedIter 20;
-
-    // Additional reporting: if there are just a few faces where there
-    // are mesh errors (after adding the layers) print their face centres.
-    // This helps in tracking down problematic mesh areas.
-    // additionalReporting true;
 }
 
 
@@ -288,7 +245,7 @@ addLayersControls
 meshQualityControls
 {
     maxNonOrtho 65;
-    maxBoundarySkewness 20;
+    maxBoundarySkewness 5;
     maxInternalSkewness 4;
     maxConcave 80;
     minVol 1e-13;

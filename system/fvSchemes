@@ -21,7 +21,7 @@ ddtSchemes
 
 gradSchemes
 {
-    default         Gauss linear;
+    default         cellLimited Gauss linear 1;
     limited         cellLimited Gauss linear 1;
     grad(U)         $limited;
     grad(k)         $limited;
@@ -33,7 +33,6 @@ divSchemes
     default          none;
 
     div(phi,U)       bounded Gauss linearUpwind limited;
-
     div(U)           Gauss linear;    // for postProcess
 
     turbulence       bounded Gauss upwind;

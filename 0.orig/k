@@ -21,27 +21,34 @@ internalField   uniform $kInlet;
 
 boundaryField
 {
-    #include        "include/ABLConditions"
+    #include    "include/ABLConditions"
 
-    inlet
-    {   type            atmBoundaryLayerInletK;
+    inletOutlet
+    {
+        type            atmBoundaryLayerInletK;
+        #include        "include/ABLConditions"
+
+    }
+    top
+    {
+        type            atmBoundaryLayerInletK;
         #include        "include/ABLConditions"
     }
-
-    outlet
-    {
-        type            inletOutlet;
-        inletValue      uniform $kInlet;
-        value           uniform $kInlet;
-    }
-
-    wall
+    Buildings
     {
         type            kqRWallFunction;
         value           uniform $kInlet;
     }
-
-    #includeEtc "caseDicts/setConstraintTypes"
+    Car
+    {
+        type            kqRWallFunction;
+        value           uniform $kInlet;
+    }
+    Terrain
+    {
+        type            kqRWallFunction;
+        value           uniform $kInlet;
+    }
 }
 
 

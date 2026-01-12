@@ -18,29 +18,40 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform ($Uinternal 0 0);
+internalField   uniform $flowVelocity;
 
 boundaryField
 {
-    inlet
+    #include    "include/ABLConditions"
+
+    inletOutlet
     {
         type            atmBoundaryLayerInletVelocity;
         #include        "include/ABLConditions"
+    }
+    top
+    {
+        type            atmBoundaryLayerInletVelocity;
+        #include        "include/ABLConditions"
+    }
+    Buildings
+    {
+        type            uniformFixedValue;
+        uniformValue    constant (0 0 0);
         value           uniform (0 0 0);
     }
-
-    outlet
+    Car
     {
-        type            pressureInletOutletVelocity;
+        type            uniformFixedValue;
+        uniformValue    constant (0 0 0);
         value           uniform (0 0 0);
     }
-
-    wall
+    Terrain
     {
-        type            noSlip;
+        type            uniformFixedValue;
+        uniformValue    constant (0 0 0);
+        value           uniform (0 0 0);
     }
-
-    #includeEtc "caseDicts/setConstraintTypes"
 }
 
 

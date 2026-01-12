@@ -1,18 +1,34 @@
 /* ABL setup */
-Uref                5.0;                    // Reference bulk velocity in m/s
-Zref                8.0;                    // Reference height for Uref in m
-zDir                (0 0 1);                // Specify the coordinate corresponding to vertical
-flowDir             (1 0 0);                // Flow direction
-z0                  uniform 0.0165;         // Terrain roughness in m
-z0_                 0.0165;                 // z0 for calculations
-d                   uniform 0.0;            // Zero-plane displacement
-kappa               0.41;                   // von Karman constant
-Cmu                 0.09;                   // C_mu
-initABL             true;                   // Initialize ABL conditions
-value               uniform 0;              // Dummy fallback when initABL=false
+Uref                5.0;                        // Reference bulk velocity in m/s
+Zref                8.0;                        // Reference height for Uref in m
+zDir                (0 0 1);                    // Specify the coordinate corresponding to vertical
+angle               0;                         // Inflow angle
+angleRad            #calc "degToRad($angle)";
+comp1               #calc "cos($angleRad)";
+comp2               #calc "sin($angleRad)";
+flowDir             ($comp1 $comp2 0);                    // Flow direction
+z0                  uniform 0.0165;             // Terrain roughness in m
+z0_                 0.0165;                     // z0 for calculations
+z0_Vegetation       uniform 0.1;
+z0_Water            uniform 0.001;
+zGround             uniform 0;
+d                   uniform 0.0;                // Zero-plane displacement
+kappa               0.41;                       // von Karman constant
+Cmu                 0.09;                       // C_mu
 
-/* Calculations */
-Uinternal           #calc "$Uref / 2";      // Initial internal flow velocity
+initABL             true;                       // Initialize ABL conditions
+value               uniform 0;                  // Dummy fallback when initABL=false
+
+E                   9.8;
+pressure            0;
+
+
+//Uinternal           #calc "$Uref / 2";      // Initial internal flow velocity
 Ustar               #calc "( $Uref * $kappa ) / log(( $Zref + $z0_ )/ $z0_ )";
+Utop                #calc "$uStar / $kappa * log(( $Zref + $z0_ )/ $z0_)";
 kInlet              #calc "pow($Ustar, 2) / sqrt( $Cmu )";
 epsilonInlet        #calc "pow($Ustar, 3) / ( $kappa * ( $Zref + $z0_ ))";
+epsilonTop          #calc "pow($uStar,3) / ( $kappa * ( $Zref + $z0_ ))";
+comp1byUref	        #calc "$Uref*$comp1";
+comp2byUref 	    #calc "$Uref*$comp2";
+flowVelocity       ($comp1byUref $comp2byUref 0);

@@ -20,25 +20,32 @@ internalField   uniform 0;
 
 boundaryField
 {
-    inlet
+    inletOutlet
     {
         type            calculated;
-        value           uniform 0;
+        #include        "include/ABLConditions"
     }
-
-    outlet
+    top
     {
         type            calculated;
-        value           uniform 0;
+        #include        "include/ABLConditions"
     }
-
-    wall
+    Buildings
     {
         type            nutkWallFunction;
-        value           uniform 0;
+        #include        "include/ABLConditions"
     }
-
-    #includeEtc "caseDicts/setConstraintTypes"
+    Car
+    {
+        type            nutkWallFunction;
+        #include        "include/ABLConditions"
+    }
+    Terrain
+    {
+        type            nutkAtmRoughWallFunction;
+        #include        "include/ABLConditions"
+        z0              $z0;
+    }
 }
 
 

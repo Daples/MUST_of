@@ -14,29 +14,44 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+#include    "include/ABLConditions"
+
 dimensions      [0 2 -2 0 0 0 0];
 
-internalField   uniform 0;
+internalField   uniform $pressure;
 
 boundaryField
 {
-    inlet
+    #include    "include/ABLConditions"
+
+    inletOutlet
+    {
+        type            freestreamPressure;
+        freestreamValue uniform $pressure;
+        supersonic      0;
+        value           uniform $pressure;
+    }
+    top
+    {
+        type            freestreamPressure;
+        freestreamValue uniform $pressure;
+        supersonic      0;
+        value           uniform $pressure;
+    }
+    Buildings
     {
         type            zeroGradient;
     }
 
-    outlet
-    {
-        type            totalPressure;
-        p0              uniform 0;
-    }
-
-    wall
+    Terrain
     {
         type            zeroGradient;
     }
 
-    #includeEtc "caseDicts/setConstraintTypes"
+    Car
+    {
+        type            zeroGradient;
+    }
 }
 
 

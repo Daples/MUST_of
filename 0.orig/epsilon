@@ -21,28 +21,40 @@ internalField   uniform $epsilonInlet;
 
 boundaryField
 {
-    #include        "include/ABLConditions"
-
-    inlet
-    {
-        type            atmBoundaryLayerInletEpsilon;
-        #include        "include/ABLConditions"
-    }
-
-    outlet
+    inletOutlet
     {
         type            inletOutlet;
         inletValue      uniform $epsilonInlet;
         value           uniform $epsilonInlet;
     }
-
-    wall
+    top
+    {
+        type            inletOutlet;
+        inletValue      uniform $epsilonInlet;
+        value           uniform $epsilonInlet;
+    }
+    Buildings
+    {
+        type            epsilonWallFunction;
+        value           uniform $epsilonInlet;
+    }
+    Buildings
     {
         type            epsilonWallFunction;
         value           uniform $epsilonInlet;
     }
 
-    #includeEtc "caseDicts/setConstraintTypes"
+    Car
+    {
+        type            epsilonWallFunction;
+        value           uniform $epsilonInlet;
+    }
+    Terrain
+    {
+        type            epsilonz0WallFunction;
+        z0              $z0;
+        value           $internalField;
+    }
 }
 
 

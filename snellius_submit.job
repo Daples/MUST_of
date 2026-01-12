@@ -15,7 +15,7 @@ writeInterval=500
 
 
 module load 2025
-module load openfoam/2506-foss-2025a
+module load OpenFOAM/v2506-foss-2025a
 
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Run function
 pwd

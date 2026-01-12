@@ -14,8 +14,8 @@ simEndTime=5001
 writeInterval=500
 
 
-module load 2024r1 openmpi
-module load openfoam/2306
+module load 2025
+module load openfoam/2506-foss-2025a
 
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Run function
 pwd

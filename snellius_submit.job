@@ -3,22 +3,22 @@
 #SBATCH --nodes=1
 #SBATCH --job-name="RANS-MUST"          # Name of the job for checking
 #SBATCH --time=4:00:00                  # Wall clock time requested
-#SBATCH --partition=genoa               # Which partition?
-#SBATCH --tasks=32                      # Number of tasks
-#SBATCH --cpus-per-task=1               # Number of cpu per task
-#SBATCH --mem-per-cpu=2000M             # Ask for memory
+#SBATCH --partition=rome                # Which partition?
+#SBATCH --tasks=16                      # Number of tasks
+#SBATCH --mem=100G                      # Ask for memory
 
 # Set the environment
-nProcs=32
+nProcs=16
 simEndTime=5001
 writeInterval=500
 
 
 module load 2025
+module load GCC OpenMPI/5.0.7-GCC-14.2.0
 module load OpenFOAM/v2506-foss-2025a
 
-source /sw/arch/RHEL9/EB_production/2025/software/OpenFOAM/v2506-foss-2025a/OpenFOAM-v2506/etc/bashrc
-. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Run function
+source ${FOAM_INST_DIR}/OpenFOAM-v2506/etc/bashrc
+. ${FOAM_INST_DIR}/OpenFOAM-v2506/bin/tools/RunFunctions
 pwd
 
 # Change number of processors in decomposeParDict

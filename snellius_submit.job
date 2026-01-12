@@ -17,6 +17,7 @@ writeInterval=500
 module load 2025
 module load OpenFOAM/v2506-foss-2025a
 
+source /sw/arch/RHEL9/EB_production/2025/software/OpenFOAM/v2506-foss-2025a/OpenFOAM-v2506/etc/bashrc
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Run function
 pwd
 

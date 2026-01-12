@@ -15,7 +15,7 @@ Uy = []
 Uz = []
 k = []
 epsilon = []
-nfolder = "./postProcessing/solverInfo/2"
+nfolder = "./postProcessing/solverInfo/1"
 nfile = "solverInfo.dat"
 with open(nfolder + "/" + nfile, encoding="utf8", errors="ignore") as f:
     lines = f.readlines()

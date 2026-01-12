@@ -24,12 +24,12 @@ for ((i = 0; i < $nProcs; i++ )); do
     for dir in ./processor$i/[0-9]*/ ;  do
         echo "Copying to $dir"
         mkdir -p $dir/polyMesh
-        cp ./processor$i/2/polyMesh/* $dir/polyMesh/
+        cp ./processor$i/1/polyMesh/* $dir/polyMesh/
     done
 done
 
-reconstructParMesh -time 2: >> log.reconstructParMesh
-reconstructPar -time 2: >> log.reconstructPar
+reconstructParMesh -time 1: >> log.reconstructParMesh
+reconstructPar -time 1: >> log.reconstructPar
 
 #------------------------------------------------------------------------------
 

@@ -9,6 +9,7 @@ cp -r 0.orig/ 0
 
 runApplication surfaceFeatureExtract
 
+m4 system/blockMeshDict.m4 > system/blockMeshDict
 runApplication blockMesh
 
 runApplication decomposePar -force
@@ -19,9 +20,9 @@ runParallel snappyHexMesh -parallel
 restore0Dir -processor
 
 for ((i = 0; i < $nProcs; i++ )); do
-    echo "Copying initial conditions to processor$i/2/"
+    echo "Copying initial conditions to processor$i/1/"
     if [ -d processor$i/0 ]; then
-        cp -r processor$i/0/* processor$i/2/
+        cp -r processor$i/0/* processor$i/1/
     else
         echo "No initial conditions found for processor $i."
     fi

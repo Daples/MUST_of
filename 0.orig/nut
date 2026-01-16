@@ -24,27 +24,34 @@ boundaryField
     {
         type            calculated;
         #include        "include/ABLConditions"
+        value           uniform 0;
     }
     top
     {
         type            calculated;
         #include        "include/ABLConditions"
+        value           uniform 0;
     }
     Buildings
     {
         type            nutkWallFunction;
         #include        "include/ABLConditions"
+        value           uniform 0;
     }
     Car
     {
         type            nutkWallFunction;
         #include        "include/ABLConditions"
+        value           uniform 0;
     }
     Terrain
     {
-        type            nutkAtmRoughWallFunction;
+        type            nutkRoughWallFunction;
         #include        "include/ABLConditions"
+        value           uniform 0;
         z0              $z0;
+        Ks              uniform 0;
+        Cs              uniform 0.5;
     }
 }
 

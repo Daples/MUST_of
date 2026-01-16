@@ -51,7 +51,7 @@ boundaryField
     }
     Terrain
     {
-        type            epsilonz0WallFunction;
+        type            atmEpsilonWallFunction;
         z0              $z0;
         value           $internalField;
     }

@@ -27,12 +27,14 @@ boundaryField
     {
         type            atmBoundaryLayerInletK;
         #include        "include/ABLConditions"
+        value           uniform 0;
 
     }
     top
     {
         type            atmBoundaryLayerInletK;
         #include        "include/ABLConditions"
+        value           uniform 0;
     }
     Buildings
     {

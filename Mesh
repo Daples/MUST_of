@@ -12,12 +12,12 @@ runApplication surfaceFeatureExtract
 m4 system/blockMeshDict.m4 > system/blockMeshDict
 runApplication blockMesh
 
+runApplication snappyHexMesh -overwrite
+
 runApplication decomposePar -force
 
-runParallel snappyHexMesh -parallel
-
 # Copy initial conditions to each processor after sHM
-restore0Dir -processor
+# restore0Dir -processor
 
 for ((i = 0; i < $nProcs; i++ )); do
     echo "Copying initial conditions to processor$i/1/"

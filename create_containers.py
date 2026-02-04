@@ -1,7 +1,6 @@
 from utils.box import Box
 from utils.rotate_mesh import rotate_geometry
 from stl import mesh
-from numpy.dtypes import StringDType
 
 import numpy as np
 import string
@@ -27,7 +26,7 @@ flow_dim = 1
 matrix = (
     np.array([l + n for n in NUMBERS for l in LETTERS])
     .reshape((len(NUMBERS), len(LETTERS)))
-    .astype(StringDType())
+    .astype("<U10")
 )
 matrix[np.where(matrix == "H5")] = "VIP car H5"
 

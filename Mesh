@@ -1,7 +1,5 @@
 #!/bin/bash
-# Run only meshing
-
-. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+. ./bin/RunFunctions
 
 nProcs=$(getNumberOfProcessors)
 
@@ -15,17 +13,5 @@ runApplication blockMesh
 runApplication snappyHexMesh -overwrite
 
 runApplication decomposePar -force
-
-# Copy initial conditions to each processor after sHM
-# restore0Dir -processor
-
-for ((i = 0; i < $nProcs; i++ )); do
-    echo "Copying initial conditions to processor$i/1/"
-    if [ -d processor$i/0 ]; then
-        cp -r processor$i/0/* processor$i/1/
-    else
-        echo "No initial conditions found for processor $i."
-    fi
-done
 
 touch must.foam

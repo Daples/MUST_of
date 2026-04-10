@@ -1,28 +1,11 @@
 #!/bin/bash
-# Run without sbatch
-
-. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+. ./bin/RunFunctions
 
 # Run solver
 runParallel $(getApplication) -opt-switch nPollProcInterfaces=-1
 
-
-# Fix ProcAdressing files
-nProcs=$(getNumberOfProcessors)
-
-for ((i = 0; i < $nProcs; i++ )); do
-    echo "Copying ProcAdressing files in processor$i/"
-
-    for dir in ./processor$i/[0-9]*/ ;  do
-        echo "Copying to $dir"
-        mkdir -p $dir/polyMesh
-        cp ./processor$i/1/polyMesh/* $dir/polyMesh/
-    done
-done
-
+# Reconstruct
 runApplication reconstructParMesh -time 1:
 runApplication reconstructPar -time 1:
-
-#------------------------------------------------------------------------------
 
 touch must.foam

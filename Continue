@@ -11,7 +11,7 @@
 module load 2024r1 openmpi
 module load openfoam/2306
 
-. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+. ~/.bin/run_of/RunFunctions
 
 # Run solver
 nProcs=$(getNumberOfProcessors)

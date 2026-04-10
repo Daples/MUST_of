@@ -1,5 +1,5 @@
 #!/bin/bash
-. ./bin/RunFunctions
+. ~/.bin/run_of/RunFunctions
 
 # Run solver
 runParallel $(getApplication) -opt-switch nPollProcInterfaces=-1

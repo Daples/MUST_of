@@ -1,5 +1,5 @@
 #!/bin/bash
-. ./bin/RunFunctions
+. ~/.bin/run_of/RunFunctions
 
 nProcs=$(getNumberOfProcessors)
 

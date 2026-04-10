@@ -1,5 +1,5 @@
 #!/bin/sh
-. ./bin/CleanFunctions
+. ~/.bin/run_of/CleanFunctions
 
 cleanCase0
 cleanSnappyFiles
